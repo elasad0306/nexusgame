@@ -100,7 +100,7 @@ class TestScenariosCatalogueComplet:
         vérifier que la valeur est bien persistée en base.
         """
         game = {
-            "title": "Asseto Corsa",
+            "title": "Football Manager 2020",
             "genre": "Sport",
             "price": 59.99,
             "stock": 10
@@ -115,6 +115,10 @@ class TestScenariosCatalogueComplet:
 
         get_game = requests.get(f"{api_url}/games/{game_id}")
         assert get_game.json()["stock"] == 0
+
+
+        delete_game = requests.delete(f"{api_url}/games/{game_id}")
+        assert delete_game.status_code == 204
 
 
 # ════════════════════════════════════════════════════════════════════════════════
