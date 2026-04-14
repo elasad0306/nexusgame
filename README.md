@@ -185,7 +185,7 @@ Et les deux autres route avec ```Get``` présentent de bonnes performances avec 
 ---
 
 ## Pipeline CI/CD
-
+Lien : https://github.com/elasad0306/nexusgame/actions
 <!-- État de votre pipeline sur GitHub Actions. -->
 
 ---
