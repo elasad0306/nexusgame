@@ -124,7 +124,7 @@ jobs:
 
       - name: Installer les dépendances
         run: |
-          pip install flask pytest pytest-playwright playwright
+          pip install flask pytest pytest-playwright playwright pytest-html
           playwright install chromium --with-deps
 
       - name: Lancer l'API et les tests UI
