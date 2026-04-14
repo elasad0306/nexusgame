@@ -1,0 +1,55 @@
+"""
+pages/home_page.py — Page Object : page d'accueil GameStore
+=============================================================
+Centralise tous les sélecteurs et actions de la page principale.
+Les tests ne doivent JAMAIS écrire de sélecteur directement —
+tout passe par cette classe.
+"""
+from playwright.sync_api import Page, expect
+
+
+BASE_URL = "http://localhost:5000"
+
+
+class HomePage:
+
+    def __init__(self, page: Page):
+        self.page = page
+
+        # TODO — Définir les locators pour chaque élément interactif.
+        # Utiliser les data-testid définis dans l'API GameStore.
+        #
+        self.game_list = page.locator("[data-testid='game-list']")
+        self.game_count = page.locator("[data-testid='game-count']")
+        self.add_btn = page.locator("[data-testid='btn-add-game']")
+        self.search_inp = page.locator("[data-testid='search-input']")
+        self.genre_sel = page.locator("[data-testid='genre-filter']")
+        self.game_card = page.locator("[data-testid='game-card']")
+        self.game_genres = page.locator("[data-testid='game-genre']")
+
+        self.game_cards = page.locator("[data-testid='game-card']")
+        self.game_genres = page.locator("[data-testid='game-genre']")
+    def navigate(self):
+        """Naviguer vers la page d'accueil."""
+        # TODO
+        self.page.goto(BASE_URL)
+
+    def get_game_cards(self):
+        """Retourner le locator de toutes les cartes de jeux."""
+        # TODO
+        return self.game_card
+
+    def open_add_form(self):
+        """Cliquer sur le bouton Ajouter un jeu."""
+        # TODO
+        self.add_btn.click()
+
+    def search(self, query: str):
+        """Taper une requête dans la barre de recherche."""
+        # TODO
+        self.search_inp.fill(query)
+
+    def filter_genre(self, genre: str):
+        """Sélectionner un genre dans le filtre déroulant."""
+        # TODO
+        self.genre_sel.select_option(genre)

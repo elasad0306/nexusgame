@@ -53,23 +53,30 @@ jobs:
   integration-tests:
     name: Tests d'intégration
     runs-on: ubuntu-latest
-    needs: unit-tests   # Ne tourne que si les tests unitaires passent
+    needs: unit-tests
 
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Installer les dépendances
-        run: |
-          pip install flask pytest pytest-html requests
+        run: pip install flask pytest pytest-html requests
 
-      - name: Lancer les tests d'intégration
+      - name: Lancer l'API et les tests
         run: |
-          # TODO — Compléter
-          echo "TODO : compléter cette étape"
+          python app_gamestore.py & 
+          # On attend que le port 5000 réponde avant de continuer
+          timeout 30s bash -c 'until curl -s localhost:5000/health; do sleep 1; done'
+          pytest tests/test_integration.py -v --html=reports/integration.html --self-contained-html
+
+      - name: Uploader le rapport
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-report
+          path: reports/integration.html
 
   # ── Job 3 : Tests Newman ───────────────────────────────────────────────────
   api-tests:
@@ -79,11 +86,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -91,28 +96,28 @@ jobs:
       - name: Installer Newman
         run: npm install -g newman newman-reporter-htmlextra
 
-      - name: Démarrer l'API GameStore
+      - name: Démarrer l'API et lancer Newman
         run: |
           pip install flask
-          # TODO — Démarrer l'API et attendre qu'elle soit prête
-          # Indice : python app_gamestore.py & puis vérifier avec curl
-          echo "TODO : démarrer l'API"
+          python app_gamestore.py &
+          timeout 30s bash -c 'until curl -s localhost:5000/health; do sleep 1; done'
+          newman run tests/gamestore_collection.json -r htmlextra --reporter-htmlextra-export reports/newman-report.html
 
-      - name: Lancer Newman
-        run: |
-          # TODO — Lancer la collection Newman
-          # Indice : newman run tests/gamestore_collection.json ...
-          echo "TODO : compléter cette étape"
+      - name: Uploader le rapport Newman
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-report
+          path: reports/newman-report.html
 
   # ── Job 4 : Tests UI Playwright ────────────────────────────────────────────
   ui-tests:
     name: Tests UI Playwright
     runs-on: ubuntu-latest
-    needs: [unit-tests, integration-tests]
+    needs: [ unit-tests, integration-tests ]
 
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -120,17 +125,19 @@ jobs:
       - name: Installer les dépendances
         run: |
           pip install flask pytest pytest-playwright playwright
-          playwright install chromium
+          playwright install chromium --with-deps
 
-      - name: Démarrer l'API GameStore
+      - name: Lancer l'API et les tests UI
         run: |
-          # TODO — Démarrer l'API et attendre qu'elle soit prête
-          # Indice : python app_gamestore.py & puis vérifier avec curl
-          echo "TODO : démarrer l'API"
+          python app_gamestore.py &
+          timeout 30s bash -c 'until curl -s localhost:5000/health; do sleep 1; done'
+          pytest tests/test_ui.py -v --html=reports/ui-test.html --self-contained-html
 
-      - name: Lancer les tests UI
-        run: |
-          # TODO — Compléter
-          echo "TODO : compléter cette étape"
-
-      # TODO — Uploader les screenshots d'échec comme artefacts
+      - name: Uploader les rapports et screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-reports
+          path: |
+            reports/ui-test.html
+            test-results/
