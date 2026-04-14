@@ -66,11 +66,17 @@ locust -f tests/locust_gamestore.py --host=http://localhost:5000 --headless -u 2
 ### Pyramide de tests adoptée
 
 <!-- Quelle pyramide avez-vous choisie et pourquoi ? -->
+La pyramide de tests adoptée c'est une pyramide de test classique. 
 
+Avec beaucoup de test unitaires effectué, on effectué des test sur les trois niveaux : unitaires (15+ tests isolés), intégration (E2E avec serveur réel) et UI (3 parcours critiques). 
+
+Cette structure permet une détection rapide des bugs au niveau des fonctions, puis validation des flux complets en conditions réelles.
 
 ### Pipeline CI vs local
 
 <!-- Qu'est-ce qui tourne en CI, qu'est-ce qui reste en local, et pourquoi ? -->
+Ce qui tourne en local ce sont les tests d'integrations et tests unitaires, elles permettent de valider le code plus rapidement.
+Par contre en CI, refait les test intégrations, tests unitaires, de l'interface (UI),  et Newman, elle vérifie avant de push le code en production
 
 ### Mes choix libres
 
